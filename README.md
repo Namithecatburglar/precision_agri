@@ -24,19 +24,11 @@ An AI-powered crop advisory and yield prediction tool built with Streamlit. Desi
 
 ---
 
-## 📦 Folder Structure
-
-precision_agri/ 
-├── app.py # Main Streamlit app 
-├── model/ 
-│ └── crop_yield_model.pkl 
-├── data/ 
-│ └── crop_yield.csv 
-├── requirements.txt 
-├── README.md
 
 
----
+
+
+
 
 ## 🛠️ Setup Instructions
 
@@ -51,20 +43,6 @@ precision_agri/
 
 ---
 
-## 🌐 Live Demo
-
-👉 [Click here to launch the dashboard](https://precision-agri.streamlit.app)  
-*(Link will work after deployment on Streamlit Cloud)*
-
----
-
-## 👨‍🌾 Built By
-
-**Yoganasree S**  
-AI/ML Developer | Hackathon Enthusiast | Impact-Driven Innovator  
-Focused on scalable solutions for agriculture, health-tech, and sustainability.
-
----
 
 ## 📬 Contact
 
