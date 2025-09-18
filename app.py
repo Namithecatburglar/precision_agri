@@ -1,4 +1,5 @@
 import streamlit as st
+from smart_crop_backend.utils import get_emotion
 import pandas as pd
 import numpy as np
 import joblib
@@ -39,6 +40,21 @@ potassium = st.sidebar.slider("Potassium (kg/ha)", 0, 100, 30)
 soil_ph = st.sidebar.slider("Soil pH", 3.5, 9.0, 6.5)
 humidity = st.sidebar.slider("Humidity (%)", 10, 100, 60)
 ndvi = st.sidebar.slider("NDVI (0=poor, 1=excellent)", 0.0, 1.0, 0.6)
+
+st.sidebar.title("🌱 Farmer Mood Check-In")
+user_feeling = st.sidebar.text_input("How are you feeling today?")
+
+if user_feeling:
+    emotion, confidence = get_emotion(user_feeling)
+    st.sidebar.markdown(f"**Detected Emotion:** `{emotion}` ({confidence})")
+
+    # Optional motivational message
+    if emotion == "anxious":
+        st.sidebar.info("You're not alone. Let's look at your crop health and find a way forward.")
+    elif emotion == "joy":
+        st.sidebar.success("Great to hear! Let’s keep that momentum going.")
+    elif emotion == "anger":
+        st.sidebar.warning("Let’s channel that energy into smart decisions. We’ve got your back.")
 
 # ----------------------------
 # Prepare Input for Model
