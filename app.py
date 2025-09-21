@@ -4,9 +4,7 @@ import numpy as np
 import joblib
 import os
 import matplotlib.pyplot as plt
-fig, ax = plt.subplots()
-ax.plot([1, 2, 3], [4, 5, 6])
-
+import plotly.express as px
 # ----------------------------
 # App Config
 # ----------------------------
@@ -160,17 +158,9 @@ for f in fertilizer_advice:
 # ----------------------------
 # Season Details
 # ----------------------------
-if st.button("📅 Show Season Details"):
-    input_2024 = pd.DataFrame([{
-        "Rainfall_mm": rainfall,
-        "Temperature_Celsius": temperature,
-        "Fertilizer_Used": fertilizer_used,
-        "Irrigation_Used": irrigation_used,
-        "Days_to_Harvest": days_to_harvest
-    }])
-    yield_2024 = model.predict(input_2024)[0] if model else predicted_yield
 
-    data_by_year = {
+# Define static years globally
+data_by_year = {
     "2019": {
         "nitrogen": 40,
         "phosphorus": 25,
@@ -197,8 +187,22 @@ if st.button("📅 Show Season Details"):
         "soil_ph": 6.5,
         "ndvi": 0.78,
         "yield": 3.5
-    },
-    "2024": {
+    }
+}
+
+# Button logic
+if st.button("📅 Show Season Details"):
+    input_2024 = pd.DataFrame([{
+        "Rainfall_mm": rainfall,
+        "Temperature_Celsius": temperature,
+        "Fertilizer_Used": fertilizer_used,
+        "Irrigation_Used": irrigation_used,
+        "Days_to_Harvest": days_to_harvest
+    }])
+    yield_2024 = model.predict(input_2024)[0] if model else predicted_yield
+
+    # Dynamically add 2024 to the dictionary
+    data_by_year["2024"] = {
         "nitrogen": nitrogen,
         "phosphorus": phosphorus,
         "potassium": potassium,
@@ -207,9 +211,7 @@ if st.button("📅 Show Season Details"):
         "ndvi": ndvi,
         "yield": yield_2024
     }
-}
-
-
+    # Continue with summary and chart..
     def display_season_summary(year, stats):
         st.markdown(f"""
             <div style="
@@ -237,29 +239,37 @@ if st.button("📅 Show Season Details"):
 
 
 # Your final chart or output
-st.pyplot(fig)
+# Create a DataFrame for plotting
+df = pd.DataFrame([
+    {"Year": year, "Rainfall_mm": year_stats["rainfall"], "Yield_tons_per_ha": year_stats["yield"]}
+    for year, year_stats in data_by_year.items()
+])
+
+# Plotly interactive chart
+fig = px.line(df, x="Rainfall_mm", y="Yield_tons_per_ha", text="Year", markers=True,
+              title="🌧️ Rainfall vs 🌾 Yield")
+fig.update_traces(textposition="top center")
+st.plotly_chart(fig, use_container_width=True)
 
 # ↓↓↓ Paste this below ↓↓↓
 st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
 
 button_html = """
-<div style="position: fixed; bottom: 30px; right: 30px;">
+<div style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
     <a href="https://app.agentx.so/shared-chat/?agent=68c779c83e2b1f04a1ec6fe9" target="_blank">
         <div style="
-            width: 60px;
-            height: 60px;
-            background-color: #ff4b4b;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 12px 20px;
+            background-color: #2e8b57;
+            border-radius: 20px;
             color: white;
-            font-size: 24px;
+            font-size: 16px;
             font-weight: bold;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            P
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.5)'" 
+           onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.4)'">
+            Progenitor AI
         </div>
     </a>
 </div>
