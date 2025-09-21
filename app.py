@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import joblib
 import os
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3], [4, 5, 6])
 
 # ----------------------------
 # App Config
@@ -231,3 +234,35 @@ if st.button("📅 Show Season Details"):
     selected_year = st.selectbox("Select a Year", list(data_by_year.keys()))
     stats = data_by_year.get(selected_year, {})
     display_season_summary(selected_year, stats)
+
+
+# Your final chart or output
+st.pyplot(fig)
+
+# ↓↓↓ Paste this below ↓↓↓
+st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
+
+button_html = """
+<div style="position: fixed; bottom: 30px; right: 30px;">
+    <a href="https://app.agentx.so/shared-chat/?agent=68c779c83e2b1f04a1ec6fe9" target="_blank">
+        <div style="
+            width: 60px;
+            height: 60px;
+            background-color: #ff4b4b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            P
+        </div>
+    </a>
+</div>
+"""
+
+st.markdown(button_html, unsafe_allow_html=True)
