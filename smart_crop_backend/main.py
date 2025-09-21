@@ -1,65 +1,24 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-import joblib
 import pandas as pd
-import logging
+import xgboost as xgb
+import joblib
+import os
 
-# ----------------------------
-# App Setup
-# ----------------------------
-app = FastAPI(title="Smart Crop Yield Predictor 🌾")
+# Load dataset
+df = pd.read_csv("data/crop_yield.csv")
 
-# ----------------------------
-# Logging
-# ----------------------------
-logging.basicConfig(level=logging.INFO)
+# Select features and target
+features = ["Rainfall_mm", "Temperature_Celsius", "Fertilizer_Used", "Irrigation_Used", "Days_to_Harvest"]
+target = "Yield_tons_per_ha"
 
-# ----------------------------
-# Load Model
-# ----------------------------
-try:
-    model = joblib.load("crop_yield_model.pkl")
-    logging.info("✅ Model loaded successfully.")
-except Exception as e:
-    logging.error(f"❌ Failed to load model: {e}")
-    model = None
+X = df[features]
+y = df[target]
 
-# ----------------------------
-# Input Schema
-# ----------------------------
-class InputData(BaseModel):
-    rainfall: float
-    temperature: float
-    pesticide: float = 0.0  # Optional field with default
+# Train model
+model = xgb.XGBRegressor(n_estimators=100, max_depth=4, learning_rate=0.1)
+model.fit(X, y)
 
-# ----------------------------
-# Health Check
-# ----------------------------
-@app.get("/")
-def health_check():
-    return {"status": "Smart Crop API is running", "model_loaded": model is not None}
+# Save model
+os.makedirs("model", exist_ok=True)
+joblib.dump(model, "model/crop_yield_model.pkl")
 
-# ----------------------------
-# Prediction Endpoint
-# ----------------------------
-@app.post("/predict")
-def predict(data: InputData):
-    if not model:
-        return {"error": "Model not loaded"}
-
-    input_df = pd.DataFrame([{
-        "Rainfall": data.rainfall,
-        "Temperature": data.temperature,
-        "Pesticide": data.pesticide
-    }])
-
-    try:
-        prediction = model.predict(input_df)[0]
-        return {"predicted_yield": round(prediction, 2)}
-    except Exception as e:
-        logging.error(f"Prediction error: {e}")
-        return {"error": f"Prediction failed: {str(e)}"}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+print("✅ Model trained and saved to model/crop_yield_model.pkl")

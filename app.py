@@ -1,5 +1,4 @@
 import streamlit as st
-from smart_crop_backend.utils import get_emotion
 import pandas as pd
 import numpy as np
 import joblib
@@ -40,21 +39,6 @@ potassium = st.sidebar.slider("Potassium (kg/ha)", 0, 100, 30)
 soil_ph = st.sidebar.slider("Soil pH", 3.5, 9.0, 6.5)
 humidity = st.sidebar.slider("Humidity (%)", 10, 100, 60)
 ndvi = st.sidebar.slider("NDVI (0=poor, 1=excellent)", 0.0, 1.0, 0.6)
-
-st.sidebar.title("🌱 Farmer Mood Check-In")
-user_feeling = st.sidebar.text_input("How are you feeling today?")
-
-if user_feeling:
-    emotion, confidence = get_emotion(user_feeling)
-    st.sidebar.markdown(f"**Detected Emotion:** `{emotion}` ({confidence})")
-
-    # Optional motivational message
-    if emotion == "anxious":
-        st.sidebar.info("You're not alone. Let's look at your crop health and find a way forward.")
-    elif emotion == "joy":
-        st.sidebar.success("Great to hear! Let’s keep that momentum going.")
-    elif emotion == "anger":
-        st.sidebar.warning("Let’s channel that energy into smart decisions. We’ve got your back.")
 
 # ----------------------------
 # Prepare Input for Model
@@ -184,11 +168,44 @@ if st.button("📅 Show Season Details"):
     yield_2024 = model.predict(input_2024)[0] if model else predicted_yield
 
     data_by_year = {
-        "2019": {"nitrogen": 40, "phosphorus": 25, "potassium": 35, "rainfall": 950, "soil_ph": 6.2, "ndvi": 0.65, "yield": 2.5},
-        "2022": {"nitrogen": 50, "phosphorus": 30, "potassium": 40, "rainfall": 1200, "soil_ph": 6.8, "ndvi": 0.75, "yield": 3.2},
-        "2023": {"nitrogen": 45, "phosphorus": 28, "potassium": 38, "rainfall": 1100, "soil_ph": 6.5, "ndvi": 0.78, "yield": 3.5},
-        "2024": {"nitrogen": nitrogen,"phosphorus": phosphorus,"potassium": potassium,"rainfall": rainfall,"soil_ph": soil_ph,"ndvi": ndvi,"yield": yield_2024}
+    "2019": {
+        "nitrogen": 40,
+        "phosphorus": 25,
+        "potassium": 35,
+        "rainfall": 950,
+        "soil_ph": 6.2,
+        "ndvi": 0.65,
+        "yield": 2.5
+    },
+    "2022": {
+        "nitrogen": 50,
+        "phosphorus": 30,
+        "potassium": 40,
+        "rainfall": 1200,
+        "soil_ph": 6.8,
+        "ndvi": 0.75,
+        "yield": 3.2
+    },
+    "2023": {
+        "nitrogen": 45,
+        "phosphorus": 28,
+        "potassium": 38,
+        "rainfall": 1100,
+        "soil_ph": 6.5,
+        "ndvi": 0.78,
+        "yield": 3.5
+    },
+    "2024": {
+        "nitrogen": nitrogen,
+        "phosphorus": phosphorus,
+        "potassium": potassium,
+        "rainfall": rainfall,
+        "soil_ph": soil_ph,
+        "ndvi": ndvi,
+        "yield": yield_2024
     }
+}
+
 
     def display_season_summary(year, stats):
         st.markdown(f"""
